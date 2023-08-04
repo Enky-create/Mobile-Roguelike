@@ -19,7 +19,7 @@ public class SpawnPoint : MonoBehaviour
         NoOpening,
     }
     [SerializeField]
-    private float waitTime = 5f;
+    private float waitTime = 7f;
     void Start()
     {
         Destroy(gameObject, waitTime);
@@ -63,7 +63,6 @@ public class SpawnPoint : MonoBehaviour
             if (collision.GetComponent<SpawnPoint>().isSpawned == false && isSpawned==false)
             {
                 Instantiate(roomsTemplates.ClosedRoom, transform.position, Quaternion.identity);
-                Destroy(gameObject);
             }
             isSpawned = true;
         }

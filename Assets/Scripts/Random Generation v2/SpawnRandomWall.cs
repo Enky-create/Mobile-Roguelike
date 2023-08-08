@@ -15,4 +15,11 @@ public class SpawnRandomWall : MonoBehaviour
         PathfindingNode node = Pathfinding.Instance.GetGrid().GetObject(transform.position);
         node.SetIsWalkable(false);
     }
+    //private void OnDestroy()
+    //{
+
+    //    PathfindingNode node = Pathfinding.Instance?.GetGrid()?.GetObject(transform.position);
+    //    node?.SetIsWalkable(true);
+
+    //}
 }

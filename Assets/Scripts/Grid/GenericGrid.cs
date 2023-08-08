@@ -60,6 +60,7 @@ public class GenericGrid<T>
             Debug.DrawLine(GetWorldPoition(width, 0), GetWorldPoition(width, height), Color.white, 1000);
             OnGridObjectChange += (object sender, OnGridObjectChangeEventArgs eventArgs) =>
                 {
+                    
                     textMeshForTesting[eventArgs.x, eventArgs.y].text = gridCells[eventArgs.x, eventArgs.y]?.ToString();
                 };
         }
@@ -88,7 +89,15 @@ public class GenericGrid<T>
     }
     public T GetObject(int x, int y)
     {
-        return gridCells[x, y]; 
+        if (x >= 0 && x <= width && y >= 0 && y <= height)
+        {
+            return gridCells[x, y];
+        }
+        else
+        {
+            return default(T);
+        }
+        
     }
     public T GetObject(Vector3 worldPosition)
     {

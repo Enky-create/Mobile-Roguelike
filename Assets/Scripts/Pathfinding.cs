@@ -12,8 +12,8 @@ public class Pathfinding
     private const int DIAGONAL_COST = 14;
 
     private GenericGrid<PathfindingNode> grid;
-    List<PathfindingNode> openList;
-    List<PathfindingNode> closedList;
+    Heap<PathfindingNode> openHeap;
+    HashSet<PathfindingNode> closedList;
     public Pathfinding(int width, int height)
     {
         if (Instance == null)
@@ -34,8 +34,11 @@ public class Pathfinding
     {
         PathfindingNode startNode = grid.GetObject(startX, startY);
         PathfindingNode endNode = grid.GetObject(endX, endY);
-        openList = new List<PathfindingNode> { startNode };
-        closedList = new List<PathfindingNode>();
+        if (endNode == null) return null;
+
+        openHeap = new Heap<PathfindingNode>(grid.GetWidth()*grid.GetHeight());
+        openHeap.Add(startNode);
+        closedList = new HashSet<PathfindingNode>();
 
         for(int x=0; x<grid.GetWidth(); x++)
         {
@@ -52,15 +55,15 @@ public class Pathfinding
         startNode.gCost = 0;
         startNode.hCost = CalculateDistanse(startNode, endNode);
         startNode.CalculateFCost();
-        while (openList.Count > 0)
+        while (openHeap.Count > 0)
         {
-            PathfindingNode currentNode = GetTheLowestFCostNode();
+            PathfindingNode currentNode = openHeap.RemoveFirstItem();
             if(currentNode == endNode)
             {
                 // reached endNode
                 return CalculatePath(endNode);
             }
-            openList.Remove(currentNode);
+            
             closedList.Add(currentNode);
             
             foreach(PathfindingNode neighbourNode in GetNeighbourList(currentNode))
@@ -78,9 +81,13 @@ public class Pathfinding
                     neighbourNode.gCost = tentativeGCost;
                     neighbourNode.hCost = CalculateDistanse(neighbourNode, endNode);
                     neighbourNode.CalculateFCost();
-                    if (!openList.Contains(neighbourNode))
+                    if (!openHeap.Contains(neighbourNode))
                     {
-                        openList.Add(neighbourNode);
+                        openHeap.Add(neighbourNode);
+                    }
+                    else
+                    {
+                        openHeap.UpdateItem(neighbourNode);
                     }
                 }
             }
@@ -95,18 +102,18 @@ public class Pathfinding
         int forward = Mathf.Abs(xDiff - yDiff);
         return diagonal * DIAGONAL_COST + forward * FORWARD_COST;
     }
-    private PathfindingNode GetTheLowestFCostNode()
-    {
-        PathfindingNode lowestFCostNode = openList[0];
-        for(int i=1; i<openList.Count; i++)
-        {
-            if(openList[i].fCost< lowestFCostNode.fCost)
-            {
-                lowestFCostNode = openList[i];
-            }
-        }
-        return lowestFCostNode;
-    }
+    //private PathfindingNode GetTheLowestFCostNode()
+    //{
+    //    PathfindingNode lowestFCostNode = openHeap[0];
+    //    for(int i=1; i<openHeap.Count; i++)
+    //    {
+    //        if(openHeap[i].fCost< lowestFCostNode.fCost)
+    //        {
+    //            lowestFCostNode = openHeap[i];
+    //        }
+    //    }
+    //    return lowestFCostNode;
+    //}
     private List<PathfindingNode> CalculatePath(PathfindingNode endNode)
     {
         List<PathfindingNode> path = new List<PathfindingNode>();

@@ -11,6 +11,7 @@ public class LevelGeneration : MonoBehaviour
         get;
         private set;
     }
+    public bool isPathCreated = false;
     public event EventHandler OnAllPathCreated;
     private void Awake()
     {
@@ -176,6 +177,7 @@ public class LevelGeneration : MonoBehaviour
             else
             {
                 stopGeneration = true;
+                isPathCreated = true;
                 OnAllPathCreated.Invoke(this, EventArgs.Empty);
             }
         }

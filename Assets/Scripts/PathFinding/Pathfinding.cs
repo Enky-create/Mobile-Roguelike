@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,23 +20,60 @@ public class Pathfinding
         if (Instance == null)
         {
             Instance = this;
-            grid = new GenericGrid<PathfindingNode>(width,
+            grid = new GenericGrid<PathfindingNode>(
+            width,
             height,
             1,
-            new Vector3(-10, -20),
+            new Vector3(-10, -20),// start position
             (GenericGrid<PathfindingNode> g, int x, int y) => new PathfindingNode(x, y, g));
+            Debug.Log("Pathfinding instance  exists");
         }
         else
         {
             Debug.Log("Pathfinding instance already exists");
         }
     }
+
+    public IEnumerator FindPath(Vector3 start, Vector3 end)
+    {
+        
+        grid.GetXY(start,out int startX,out int startY);
+        grid.GetXY(end, out int endX, out int endY);
+        
+        Debug.Log("HERE iam " + startX + " " + startY + " " + endX + " " + endY);
+        Vector3[] path = FromPathfindingNodeToVector3Simplify(FindPath(startX, startY, endX, endY));
+        Debug.Log("Length " + path.Length);
+        Debug.Log("Path" + path);
+        yield return null;
+        Debug.Log("HERE IS path" + path == null);
+        PathRequestManager.Instance.FinishedProcessingath(path, path != null ? true : false);
+        
+    }
+    public Vector3[] FromPathfindingNodeToVector3Simplify(List<PathfindingNode> path)
+    {
+        if (path != null && path.Count > 0)
+        {
+            List<Vector3> vector3Path = new List<Vector3>();
+            Vector2 directionOld = Vector2.zero;
+            for (int i = 1; i < path.Count; i++)
+            {
+                Vector2 directionNew = new Vector2(path[i - 1].x - path[i].x, path[i - 1].y - path[i].y);
+                if(directionNew!= directionOld)
+                {
+                    vector3Path.Add(grid.GetWorldPoition(path[i].x, path[i].y));
+                }
+                directionOld = directionNew;
+            }
+            return vector3Path.ToArray();
+        }
+        return null;
+    }
     public List<PathfindingNode> FindPath(int startX, int startY, int endX, int endY)
     {
         PathfindingNode startNode = grid.GetObject(startX, startY);
         PathfindingNode endNode = grid.GetObject(endX, endY);
         if (endNode == null) return null;
-
+        if (startNode == endNode) return null;
         openHeap = new Heap<PathfindingNode>(grid.GetWidth()*grid.GetHeight());
         openHeap.Add(startNode);
         closedList = new HashSet<PathfindingNode>();
@@ -46,7 +84,6 @@ public class Pathfinding
             {
                 PathfindingNode node = grid.GetObject(x, y);
                 node.gCost = int.MaxValue;
-                //node.SetIsWalkable(true);
                 node.CalculateFCost();
                 node.cameFromNode = null;
             }
@@ -94,6 +131,9 @@ public class Pathfinding
         }
         return null;
     }
+
+    
+
     private int CalculateDistanse (PathfindingNode start, PathfindingNode end)
     {
         int xDiff = Mathf.Abs(start.x - end.x);

@@ -65,7 +65,7 @@ public class GenericGrid<T>
                 };
         }
     }
-    private Vector3 GetWorldPoition(int x, int y)
+    public Vector3 GetWorldPoition(int x, int y)
     {
         return new Vector3(x, y) * cellSize + originPosition;
     }

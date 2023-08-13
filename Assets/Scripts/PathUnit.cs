@@ -11,13 +11,19 @@ public class PathUnit : MonoBehaviour
     private Vector3[] path;
     int targetIndex = 0;
 
+    private void Start()
+    {
+        LevelGeneration.Instance.OnAllRoomsCreated += Instance_OnAllRoomsCreated;
+    }
+
+    private void Instance_OnAllRoomsCreated(object sender, System.EventArgs e)
+    {
+        PathRequestManager.Instance.RequestPath(transform.position, target.position, onPathFound);
+    }
+
     private void Update()
     {
-        if (LevelGeneration.Instance.isPathCreated)
-        {
-            PathRequestManager.Instance.RequestPath(transform.position, target.position, onPathFound);
-            
-        }
+        
     }
     public void onPathFound(Vector3[] newPath, bool IsPathSuccessful)
     {
@@ -44,8 +50,12 @@ public class PathUnit : MonoBehaviour
                 }
                 currentWayPoint = path[targetIndex];
             }
-            transform.position = Vector3.MoveTowards(transform.position, currentWayPoint, speed);
+            transform.position = Vector3.MoveTowards(transform.position, currentWayPoint, speed*Time.deltaTime);
             yield return null;
         }
+    }
+    private void OnDestroy()
+    {
+        LevelGeneration.Instance.OnAllRoomsCreated -= Instance_OnAllRoomsCreated;
     }
 }

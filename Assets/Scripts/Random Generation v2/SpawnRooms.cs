@@ -11,7 +11,10 @@ public class SpawnRooms : MonoBehaviour
     private void Start()
     {
         LevelGeneration.Instance.OnAllPathCreated += Instance_OnAllPathCreated;
+        
     }
+
+    
 
     private void Instance_OnAllPathCreated(object sender, System.EventArgs e)
     {
@@ -26,7 +29,12 @@ public class SpawnRooms : MonoBehaviour
             int randomRoom = Random.Range(0,LevelGeneration.Instance.rooms.Count);
             int randomVariation = Random.Range(0, LevelGeneration.Instance.rooms[randomRoom].variations.Length);
             Instantiate(LevelGeneration.Instance.rooms[randomRoom].variations[randomVariation], transform.position,Quaternion.identity);
+            LevelGeneration.Instance.currentRoomCount++;
         }
         Destroy(gameObject);
+    }
+    private void OnDestroy()
+    {
+        LevelGeneration.Instance.OnAllPathCreated -= Instance_OnAllPathCreated;
     }
 }

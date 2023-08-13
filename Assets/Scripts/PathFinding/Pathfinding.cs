@@ -40,12 +40,13 @@ public class Pathfinding
         grid.GetXY(start,out int startX,out int startY);
         grid.GetXY(end, out int endX, out int endY);
         
-        Debug.Log("HERE iam " + startX + " " + startY + " " + endX + " " + endY);
+        
+        
         Vector3[] path = FromPathfindingNodeToVector3Simplify(FindPath(startX, startY, endX, endY));
-        Debug.Log("Length " + path.Length);
-        Debug.Log("Path" + path);
-        yield return null;
+
         Debug.Log("HERE IS path" + path == null);
+        yield return null;
+        
         PathRequestManager.Instance.FinishedProcessingath(path, path != null ? true : false);
         
     }

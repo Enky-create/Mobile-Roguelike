@@ -1037,6 +1037,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76ecbafdc15106d43aa2109721154016, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxRoomCount: 16
+  currentRoomCount: 0
   isPathCreated: 0
   rooms:
   - name: 0

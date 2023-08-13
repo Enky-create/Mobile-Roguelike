@@ -6,6 +6,9 @@ using Random = UnityEngine.Random;
 
 public class LevelGeneration : MonoBehaviour
 {
+    [SerializeField]
+    private int maxRoomCount;
+    public int currentRoomCount=0;
     public static LevelGeneration Instance
     {
         get;
@@ -13,6 +16,7 @@ public class LevelGeneration : MonoBehaviour
     }
     public bool isPathCreated = false;
     public event EventHandler OnAllPathCreated;
+    public event EventHandler OnAllRoomsCreated;
     private void Awake()
     {
         if (Instance != null)
@@ -65,6 +69,7 @@ public class LevelGeneration : MonoBehaviour
     [SerializeField]
     private LayerMask roomLayer;
     private int downDirectionCount;
+    private Room currentRoom;
     void Start()
     {
         downDirectionCount = 0;
@@ -72,23 +77,29 @@ public class LevelGeneration : MonoBehaviour
         transform.position = startPositions[randPosition].position;
         int randRoom = Random.Range(0, rooms.Count);
         int randVar = Random.Range(0, rooms[0].variations.Length);
-        Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity);
+        currentRoom= Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity).GetComponent<Room>();
         direction = Random.Range(1, 6);
         spawnroomTime = startroomTime;
+        currentRoomCount++;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (spawnroomTime < 0 && !stopGeneration)
+        if (/*spawnroomTime < 0 && */!stopGeneration)
         {
             SpawnRoom();
             spawnroomTime = startroomTime;
         }
-        else
+        if (currentRoomCount == maxRoomCount)
         {
-            spawnroomTime -= Time.deltaTime;
+            
+            OnAllRoomsCreated?.Invoke(this, EventArgs.Empty);
         }
+        //else
+        //{
+        //    spawnroomTime -= Time.deltaTime;
+        //}
     }
     private void SpawnRoom()
     {
@@ -102,7 +113,9 @@ public class LevelGeneration : MonoBehaviour
                 transform.position = new Vector2(transform.position.x + moveAmount, transform.position.y);
                 int randRoom = Random.Range(0, rooms.Count);
                 int randVar = Random.Range(0, rooms[0].variations.Length);
-                Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity);
+                
+
+                currentRoom = Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity).GetComponent<Room>();
                 direction = Random.Range(1, 6);
                 if (direction==3)
                 {
@@ -112,6 +125,7 @@ public class LevelGeneration : MonoBehaviour
                 {
                     direction = 5;
                 }
+                currentRoomCount++;
             }
             else
             {
@@ -129,7 +143,9 @@ public class LevelGeneration : MonoBehaviour
                 transform.position = new Vector2(transform.position.x - moveAmount, transform.position.y);
                 int randRoom = Random.Range(0, rooms.Count);
                 int randVar = Random.Range(0, rooms[0].variations.Length);
-                Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity);
+                
+                currentRoom = Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity).GetComponent<Room>();
+                currentRoomCount++;
                 direction = Random.Range(3, 6);
             }
             else
@@ -143,42 +159,65 @@ public class LevelGeneration : MonoBehaviour
             if (transform.position.y>minY)
             {
                 downDirectionCount++;
-                Collider2D roomDetection = Physics2D.OverlapCircle(transform.position, 1, roomLayer);
-                if(roomDetection.TryGetComponent(out Room room))
+                //Collider2D roomDetection = Physics2D.OverlapCircle(transform.position, 1, roomLayer);
+                //if(roomDetection.TryGetComponent(out Room room))
+                //{
+                //    if (room.type != VariationRoomName.LeftDownRight && room.type != VariationRoomName.LeftUpRightDown)
+                //    {
+                //        if (downDirectionCount > 1)
+                //        {
+                //            room.RoomDestruct();
+                //            Instantiate(rooms[3].variations[0], transform.position, Quaternion.identity);
+                //        }
+                //        else
+                //        {
+                //            room.RoomDestruct();
+                //            int randroom = Random.Range(1, 4);
+                //            if (randroom == 2)
+                //            {
+                //                randroom = 1;
+                //            }
+                //            int randvar = Random.Range(0, rooms[randroom].variations.Length);
+                //            Instantiate(rooms[randroom].variations[randvar], transform.position, Quaternion.identity);
+                //        }
+
+                //    }
+                //}
+                
+                if (currentRoom.type != VariationRoomName.LeftDownRight && currentRoom.type != VariationRoomName.LeftUpRightDown)
                 {
-                    if (room.type != Room.VariationRoomName.LeftDownRight && room.type != Room.VariationRoomName.LeftUpRightDown)
+                    if (downDirectionCount > 1)
                     {
-                        if (downDirectionCount > 1)
-                        {
-                            room.RoomDestruct();
-                            Instantiate(rooms[3].variations[0], transform.position, Quaternion.identity);
-                        }
-                        else
-                        {
-                            room.RoomDestruct();
-                            int randroom = Random.Range(1, 4);
-                            if (randroom == 2)
-                            {
-                                randroom = 1;
-                            }
-                            int randvar = Random.Range(0, rooms[randroom].variations.Length);
-                            Instantiate(rooms[randroom].variations[randvar], transform.position, Quaternion.identity);
-                        }
-                        
+                        currentRoom.RoomDestruct();
+                        currentRoom=Instantiate(rooms[3].variations[0], transform.position, Quaternion.identity).GetComponent<Room>();
                     }
+                    else
+                    {
+                        currentRoom.RoomDestruct();
+                        int randroom = Random.Range(1, 4);
+                        if (randroom == 2)
+                        {
+                            randroom = 1;
+                        }
+                        int randvar = Random.Range(0, rooms[randroom].variations.Length);
+                        currentRoom=Instantiate(rooms[randroom].variations[randvar], transform.position, Quaternion.identity).GetComponent<Room>();
+                    }
+
                 }
                 
+
                 transform.position = new Vector2(transform.position.x, transform.position.y - moveAmount);
                 int randRoom = Random.Range(2, rooms.Count);
                 int randVar = Random.Range(0, rooms[randRoom].variations.Length);
-                Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity);
+                currentRoom = Instantiate(rooms[randRoom].variations[randVar], transform.position, Quaternion.identity).GetComponent<Room>();
+                currentRoomCount++;
                 direction = Random.Range(1, 6);
             }
             else
             {
                 stopGeneration = true;
                 isPathCreated = true;
-                OnAllPathCreated.Invoke(this, EventArgs.Empty);
+                OnAllPathCreated?.Invoke(this, EventArgs.Empty);
             }
         }
     }

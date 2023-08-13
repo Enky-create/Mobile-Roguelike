@@ -56,22 +56,7 @@ public class PathRequestManager : MonoBehaviour
         StartCoroutine(Pathfinding.Instance.FindPath(start, end));
         
     }
-    // IEnumerator FindPath(Vector3 start, Vector3 end)
-    //{
-    //    Debug.Log("AAAAAAAAAAAAAAAA");
-    //    int startX = (int)start.x;
-    //    int startY = (int)start.y;
-    //    int endX = (int)end.x;
-    //    int endY = (int)end.y;
-    //    Debug.Log("HERE iam " + startX + " " + startY + " " + endX + " " + endY);
-    //    Vector3[] path = Pathfinding.Instance.FromPathfindingNodeToVector3Simplify(Pathfinding.Instance.FindPath(startX, startY, endX, endY));
-    //    Debug.Log("Length " + path.Length);
-    //    Debug.Log("Path" + path);
-    //    yield return null;
-
-    //    Instance.FinishedProcessingath(path, path != null ? true : false);
-
-    //}
+    
     public void FinishedProcessingath(Vector3[] path, bool success)
     {
         currentPathRequest.callback(path, success);

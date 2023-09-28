@@ -13,6 +13,7 @@ public class PathRequestManager : MonoBehaviour
     PathRequest currentPathRequest;
     bool isProcessingPath;
     Pathfinding pathfinding;
+    int count = 0;
     public static PathRequestManager Instance
     {
         get; private set;
@@ -32,7 +33,7 @@ public class PathRequestManager : MonoBehaviour
     }
     public void RequestPath(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
     {
-        
+        count++;
         PathRequest pathRequest = new PathRequest(pathStart, pathEnd, callback);
         
         Instance.pathRequestQueue.Enqueue(pathRequest);

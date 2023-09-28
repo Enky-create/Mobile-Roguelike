@@ -27,10 +27,11 @@ public class PathUnit : MonoBehaviour
     }
     public void onPathFound(Vector3[] newPath, bool IsPathSuccessful)
     {
-        Debug.Log("PAth++ " + newPath==null +" "+ IsPathSuccessful);
+        Debug.Log("Onpathfound");
         if (IsPathSuccessful)
         {
             path = newPath;
+            Debug.Log("End point"+path.Length);
             StopCoroutine("FollowPath");
             StartCoroutine("FollowPath");
         }
@@ -39,9 +40,10 @@ public class PathUnit : MonoBehaviour
     {
        
         Vector3 currentWayPoint = path[0];
+        targetIndex = 0;
         while (true)
         {
-            if(transform.position== currentWayPoint)
+            if(transform.position == currentWayPoint)
             {
                 targetIndex++;
                 if (targetIndex >= path.Length)

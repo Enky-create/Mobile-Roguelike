@@ -58,13 +58,14 @@ public class Pathfinding
             Vector2 directionOld = Vector2.zero;
             for (int i = 1; i < path.Count; i++)
             {
-                Vector2 directionNew = new Vector2(path[i - 1].x - path[i].x, path[i - 1].y - path[i].y);
-                if(directionNew!= directionOld)
+                Vector2 directionNew = new Vector2(path[i].x - path[i - 1].x, path[i].y - path[i - 1].y);
+                if (directionNew != directionOld)
                 {
                     vector3Path.Add(grid.GetWorldPoition(path[i].x, path[i].y));
                 }
                 directionOld = directionNew;
             }
+            vector3Path.Add(grid.GetWorldPoition(path[path.Count - 1].x, path[path.Count - 1].y));
             return vector3Path.ToArray();
         }
         return null;

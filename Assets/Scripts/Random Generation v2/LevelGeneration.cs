@@ -70,6 +70,8 @@ public class LevelGeneration : MonoBehaviour
     private LayerMask roomLayer;
     private int downDirectionCount;
     private Room currentRoom;
+    //For pathfinding check
+    private bool areAllRoomsCreated = false;
     void Start()
     {
         downDirectionCount = 0;
@@ -91,9 +93,9 @@ public class LevelGeneration : MonoBehaviour
             SpawnRoom();
             spawnroomTime = startroomTime;
         }
-        if (currentRoomCount == maxRoomCount)
+        if (currentRoomCount == maxRoomCount && !areAllRoomsCreated)
         {
-            
+            areAllRoomsCreated = true;
             OnAllRoomsCreated?.Invoke(this, EventArgs.Empty);
         }
         //else
